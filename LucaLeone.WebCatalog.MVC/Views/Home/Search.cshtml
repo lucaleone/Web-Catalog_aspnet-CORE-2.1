@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Home Page - catalog";
+}
+<div class="row">
+    <div class="search-container">
+        <form action="/Search">
+            <input type="text" placeholder="Search.." name="name">
+            @*<input type="number" placeholder="0" name="minPrice">
+			<input type="number" placeholder="0" name="maxPrice">*@
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+<div class="row">
+    @foreach (var item in Model.Products)
+    {
+        <div>
+            <h2>@item.Name</h2>
+            <div class="productImageAndDesc">
+                <img src="@item.Photo" onerror="this.src = 'images/default_product.jpg'"/>
+                <div>
+                    <ul>
+                        <li>Price: <span>@item.Price</span> €</li>
+                        <li>LastUpdate: <span>@item.LastUpdated.ToLocalTime()</span></li>
+                    </ul>
+                </div>
+                <div>
+                    @*<button type="button" class="btn btn-primary">View</button>*@
+                    <button type="button" class="btn btn-secondary edit-Product-button" name="@item.Id">Edit</button>
+                    <button type="button" class="btn btn-danger delete-Product-button" name="@item.Id">Delete</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="row">
+    <h1>Edit Product:</h1>
+    <div>
+        <form id="EditProductForm" method="get" action="/EditProduct">
+            <input type="hidden" name="id" value="@Model.Id"/>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" placeholder="product name" name="name" class="form-control" value="@Model.Name" required/>
+            </div>
+            <div class="form-group">
+                <label for="price">Price (in €): €</label>
+                <input type="number" step="0.01" placeholder="product price" name="price" min="0.10" class="form-control" value="@Model.Price" required/>
+            </div>
+            <div class="form-group">
+                <label for="photo">Product picture:</label>
+                <input type="url" placeholder="photo url" name="photo" class="form-control" value="@Model.Photo"/>
+                @*<input type="file" accept="image/*" class="form-control-file" name="photo" aria-describedby="fileHelp" />*@
+            </div>
+            <input type="submit" value="Save changes" id="EditProductButton" class="btn btn-primary"/>
+        </form>
+    </div>
+</div>

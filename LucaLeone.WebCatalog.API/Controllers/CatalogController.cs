@@ -230,7 +230,7 @@ namespace LucaLeone.WebCatalog.Controllers
         [HttpGet]
         [Route("[action]")]
         [Produces("text/plain")]
-        public async Task<IActionResult> initDb()
+        public async Task<IActionResult> InitDb()
         {
             await _catalogService.InitDb();
             return Ok("DB init done! go back and refresh");
@@ -248,7 +248,7 @@ namespace LucaLeone.WebCatalog.Controllers
         [HttpGet]
         [Route("[action]")]
         [Produces("text/plain")]
-        public async Task<IActionResult> eraseDb()
+        public async Task<IActionResult> EraseDb()
         {
             bool res = await _catalogService.eraseDb();
             return Ok(res
