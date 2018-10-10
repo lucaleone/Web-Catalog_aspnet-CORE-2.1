@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+LucaLeone.WebCatalog.API/appsettings.Production.json
+LucaLeone.WebCatalog.API/Export/Products.csv

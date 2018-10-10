@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using LucaLeone.WebCatalog.MVC.Models;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace LucaLeone.WebCatalog.MVC.Services
@@ -13,14 +14,14 @@ namespace LucaLeone.WebCatalog.MVC.Services
     {
         private readonly string _remoteServiceBaseUrl;
         private readonly HttpClient hc;
+        public IConfiguration Configuration { get; }
 
-        public CatalogService()
+        public CatalogService(IConfiguration configuration)
         {
-            _remoteServiceBaseUrl = @"https://localhost:44303/api/catalog";
-            hc = new HttpClient
-            {
-                BaseAddress = new Uri(_remoteServiceBaseUrl)
-            };
+            Configuration = configuration;
+            _remoteServiceBaseUrl = Configuration.GetValue<string>("WebCatalog.API_endpoint");
+            hc = new HttpClient();
+            hc.BaseAddress = new Uri(_remoteServiceBaseUrl);
             hc.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
         }

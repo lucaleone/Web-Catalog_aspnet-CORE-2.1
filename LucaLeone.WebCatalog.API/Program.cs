@@ -19,10 +19,10 @@ namespace LucaLeone.WebCatalog
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-//#if DEBUG
+#if DEBUG
             .CaptureStartupErrors(true)
             .UseSetting("detailedErrors", "true")
-//#endif
+#endif
                 .UseStartup<Startup>();
     }
 }

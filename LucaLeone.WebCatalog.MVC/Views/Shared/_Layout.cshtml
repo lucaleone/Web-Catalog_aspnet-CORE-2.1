@@ -37,13 +37,13 @@
                         <a asp-area="" asp-controller="Home" asp-action="AddProduct">Add Product</a>
                     </li>
                     <li>
-                        <a href="https://localhost:44303/api/Catalog/Export">Export Catalog</a>
+                        <a href="@ViewBag.WebCatalogAPI_endpoint/Export">Export Catalog</a>
                     </li>
                     <li>
-                        <a href="https://localhost:44303/api/Catalog/InitDb">[Dev]Init Catalog</a>
+                        <a href="@ViewBag.WebCatalogAPI_endpoint/InitDb">[Dev]Init Catalog</a>
                     </li>
                     <li>
-                        <a href="https://localhost:44303/api/Catalog/EraseDb">[Dev]Erase Catalog</a>
+                        <a href="@ViewBag.WebCatalogAPI_endpoint/EraseDb">[Dev]Erase Catalog</a>
                     </li>
                     <li>
                         <a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
