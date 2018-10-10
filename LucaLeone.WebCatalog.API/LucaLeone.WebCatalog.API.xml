@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LucaLeone.WebCatalog.API</name>
+    </assembly>
+    <members>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.GetCatalog(System.Int32,System.Int32)">
+            <summary>
+                Search for products that mach the query
+            </summary>
+            <remarks>
+                Sample request:
+                GET api/Catalog?page=1
+            </remarks>
+            <param name="page">[Optional, default 1] Number of the page (elements to skip)</param>
+            <param name="maxNumElem">[Optional, default 10]Max amount of products to return</param>
+            <returns>A list of the matching products</returns>
+            <response code="200">Returns a list of the matching products</response>
+            <response code="400">If the query is not valid</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.Search(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+                Search for products that mach the query
+            </summary>
+            <remarks>
+                Sample request:
+                GET api/Catalog/GetProduct?name=lamp&amp;minPrice=10
+            </remarks>
+            <param name="name">Id of the Product to search</param>
+            <param name="minPrice">[Optional] Min price of the product in €</param>
+            <param name="maxPrice">[Optional] Max price of the product in €</param>
+            <returns>A list of the matching products</returns>
+            <response code="200">Returns a list of the matching products</response>
+            <response code="400">If the query is not valid</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.GetProduct(System.Guid)">
+            <summary>
+                Search for a product by Id
+            </summary>
+            <remarks>
+                Sample request:
+                GET api/Catalog/GetProduct?id=8916c69a-8041-4768-8e0d-a391361ff732
+            </remarks>
+            <param name="id">Id of the Product to search</param>
+            <returns>A Product with matchind Id</returns>
+            <response code="200">Returns a Product with matchind Id</response>
+            <response code="400">If the Id does not exist</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.Export">
+            <summary>
+                Serves a CSV file with the entire catalog
+            </summary>
+            <remarks>
+                Sample request:
+                GET api/Catalog/Export
+            </remarks>
+            <returns>A CSV file with the entire catalog</returns>
+            <response code="200">Returns a CSV file with the entire catalog</response>
+            <response code="400">If the file does not exist</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.AddProduct(LucaLeone.WebCatalog.Models.NewProduct)">
+            <summary>
+                Add a Product to the catalog
+            </summary>
+            <remarks>
+                Sample request:
+                POST api/Catalog/AddProduct
+                {"name":"new product name", "price":"52.99",
+                "photo":"https://www.bhphotovideo.com/images/images2500x2500/dell_u2417h_24_16_9_ips_1222870.jpg"}
+            </remarks>
+            <param name="newProduct">Product to add</param>
+            <returns>A newly-created Product</returns>
+            <response code="201">Returns the newly-created Product</response>
+            <response code="400">If the Product is not valid</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.EditProduct(System.Guid,LucaLeone.WebCatalog.Models.NewProduct)">
+            <summary>
+                Edit a Product in the catalog
+            </summary>
+            <remarks>
+                Sample request:
+                PUT api/Catalog/EditProduct?id=8916c69a-8041-4768-8e0d-a391361ff732
+                {"name":"test modified", "price":"52.99", "photo":"test2new.png"}
+            </remarks>
+            <param name="id">Id of the Product to edit</param>
+            <param name="newProduct">Customized product</param>
+            <returns>The updated Product</returns>
+            <response code="200">Returns the updated Product</response>
+            <response code="400">If the Id does not exist in the Catalog</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.DeleteProduct(System.Guid)">
+            <summary>
+                Delete a Product in the catalog
+            </summary>
+            <remarks>
+                Sample request:
+                DELETE api/Catalog/DeleteProduct?id=8916c69a-8041-4768-8e0d-a391361ff732
+            </remarks>
+            <param name="id">Id of the Product to delete</param>
+            <returns>The deleted Product</returns>
+            <response code="200">Returns the deleted Product</response>
+            <response code="400">If the Id does not exist in the Catalog</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.initDb">
+            <summary>
+                DEV ONLY: initialize the Product table
+            </summary>
+            <remarks>
+                Sample request:
+                GET api/Catalog/initDb
+            </remarks>
+            <returns>A string with the result of the DB initialization</returns>
+            <response code="200">Returns a string with the result of the DB initialization</response>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Controllers.CatalogController.eraseDb">
+            <summary>
+                DEV ONLY: erase the content of the Product table
+            </summary>
+            <remarks>
+                Sample request:
+                GET api/Catalog/eraseDb
+            </remarks>
+            <returns>A string with the result of the DB cleaning</returns>
+            <response code="200">Returns a string with the result of the DB cleaning</response>
+        </member>
+        <member name="T:LucaLeone.WebCatalog.Models.Product">
+            <summary>
+                Product describe a product item in the catalog
+            </summary>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Models.Product.#ctor">
+            <summary>
+                Base Product Constructor, inizialize the Product Id
+            </summary>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Models.Product.#ctor(System.String,System.String,System.Decimal)">
+            <summary>
+                Calls the base Product Constructor and set the fields, then update LastUpdated
+            </summary>
+        </member>
+        <member name="P:LucaLeone.WebCatalog.Models.Product.Id">
+            <summary>Id of the product</summary>        
+        </member>
+        <member name="P:LucaLeone.WebCatalog.Models.Product.Name">
+            <summary>Name of the product</summary>
+        </member>
+        <member name="P:LucaLeone.WebCatalog.Models.Product.Photo">
+            <summary>Photo url of the product</summary>
+        </member>
+        <member name="P:LucaLeone.WebCatalog.Models.Product.Price">
+            <summary>Price of the product</summary>
+        </member>
+        <member name="P:LucaLeone.WebCatalog.Models.Product.LastUpdated">
+            <summary>UTC time of the last update of the product</summary>
+        </member>
+        <member name="M:LucaLeone.WebCatalog.Models.Product.EditProduct(System.String,System.String,System.Decimal)">
+            <summary>
+                Set product detail and automatically update the LastUpdated field
+            </summary>
+            <param name="name">Name of the product</param>
+            <param name="photo">Photo url of the product</param>
+            <param name="price">Price of the product</param>
+        </member>
+    </members>
+</doc>
