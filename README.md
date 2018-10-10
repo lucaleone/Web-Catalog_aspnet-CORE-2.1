@@ -1,8 +1,9 @@
 # Products Catalog
-Solution for managing products catalog. With the MVC app the users can to add, edit, remove, view and search and export (Excel CSV) product catalog items. The Information about product catalog entities are exposed through RESTful service.  
+Solution for managing a products catalog. With the MVC app the users can to add, edit, remove, view and search and export (Excel CSV) product catalog items. The Information about product catalog entities are exposed through RESTful service.  
 
 ## Features
 🚀 Framework: .NET CORE 2.1<br />
+☁ Azure: web app hosted on Azure<br />
 📃 API documentation: Swagger with Swashbuckle.AspNetCore<br />
 🏗 Patterns: MVC, Dependency injectin, Builder<br />
 
