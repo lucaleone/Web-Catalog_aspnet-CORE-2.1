@@ -15,8 +15,9 @@ Saved in UTC time in the DB, the clients will convert the UTC time to the local 
 * **Photo**:<br />
 The product photo is represented by a URL to an external resource. A future implementation will allow upload and compression of images.
 ### Design Pattern
-![screens](/Presentation/Architecture.png)
-* **MVC**:<br />The division between the WEBAPI solution and the MVC app allows the code to be clean, modular, scalable and reusable.
+
+* **MVC**:<br />
+![alt text](/Presentation/Architecture.png)The division between the WEBAPI solution and the MVC app allows the code to be clean, modular, scalable and reusable.
 * **Builder pattern**:<br />
 Link: https://en.wikipedia.org/wiki/Builder_pattern#C#
 Used for NewProduct class with the interface IProductBuilder,
