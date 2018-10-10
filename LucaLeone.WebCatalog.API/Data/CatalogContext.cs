@@ -23,4 +23,6 @@ namespace LucaLeone.WebCatalog.Data
         Add-Migration fixClass
    Apply new Migration:
         Update-Database –Verbose
+   Remove:
+        Remove-Migration
 */

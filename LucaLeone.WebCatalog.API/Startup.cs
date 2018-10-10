@@ -30,9 +30,8 @@ namespace LucaLeone.WebCatalog
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CatalogContext>(opt => opt.UseInMemoryDatabase("CatalogContext"));
-        //    services.AddDbContext<CatalogContext>
-        //(options => options.UseSqlServer(Configuration.GetConnectionString("CatalogDbConnection")));
+            //services.AddDbContext<CatalogContext>(opt => opt.UseInMemoryDatabase("CatalogContext"));
+            services.AddDbContext<CatalogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CatalogDbConnection")));
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
@@ -73,7 +72,7 @@ namespace LucaLeone.WebCatalog
             {
                 c.RoutePrefix = "api-docs";
                 c.SwaggerEndpoint("v1/CatalogAPI.json",
-                    "Catalog API v1"); // will be relative to route prefix, which is itself relative to the application basepath
+                    "Catalog API v1");
             });
             app.UseMvc();
         }
