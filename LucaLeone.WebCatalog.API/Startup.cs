@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,7 @@ namespace LucaLeone.WebCatalog
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<CatalogContext>(opt => opt.UseInMemoryDatabase("CatalogContext"));
-            services.AddDbContext<CatalogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CatalogDbConnection")));
+            services.AddDbContext<CatalogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LucaLeone.WebCatalogDb")));
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
@@ -57,9 +58,11 @@ namespace LucaLeone.WebCatalog
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            const string swaggerDocumentationPath = "api-docs";
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -67,13 +70,16 @@ namespace LucaLeone.WebCatalog
             }
 
             app.UseHttpsRedirection();
-            app.UseSwagger(c => { c.RouteTemplate = "api-docs/{documentName}/CatalogAPI.json"; });
+            app.UseSwagger(c => { c.RouteTemplate = swaggerDocumentationPath+"/{documentName}/CatalogAPI.json"; });
             app.UseSwaggerUI(c =>
             {
-                c.RoutePrefix = "api-docs";
+                c.RoutePrefix = swaggerDocumentationPath;
                 c.SwaggerEndpoint("v1/CatalogAPI.json",
                     "Catalog API v1");
             });
+            var option = new RewriteOptions();
+            option.AddRedirect("^$", swaggerDocumentationPath);
+            app.UseRewriter(option);
             app.UseMvc();
         }
     }
