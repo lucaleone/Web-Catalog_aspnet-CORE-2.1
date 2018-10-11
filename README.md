@@ -4,7 +4,7 @@ Asp.NET CORE web app for managing a products catalog. With the MVC app the users
 ## Features
 🚀 Framework: .NET CORE 2.1<br />
 ☁ Azure: web app hosted on Azure<br />
-📃 API documentation: Swagger with Swashbuckle.AspNetCore<br />
+📃 API documentation: Swagger with Swashbuckle.AspNetCore with custom responsive layout<br />
 🏗 Patterns: MVC, Dependency injectin, Builder<br />
 
 ## For developer only
@@ -51,7 +51,9 @@ While the AddProduct simply add a new line to the existing file, edit or delete 
 A future improvement is to write the products ordered by datatime, in this way is possible to do a binary search ( O(log N)  ) in the file in order to delete or edit a single line.
 ### Api Documentation
 API documentation made with Swashbuckle.AspNetCore available at: https://localhost:44303/api-docs
-![screens](/Presentation/Swagger.png)
+<img src="/Presentation/Swagger.png" alt="" width="550"/><br />
+The project customizes the Swagger UI to allow the use on mobile devices, here a preview:
+<img src="/Presentation/swaggerMobile.png" alt="" width="350"/><br />
 ### Data Concurrency
 Data concurrency in this project is managed this way:
 User1 start editing ProductA, User2 delete ProductA, User1 save changes-> User1 changes are lost and the ProductA deleted
