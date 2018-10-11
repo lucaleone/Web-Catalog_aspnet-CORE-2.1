@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using LucaLeone.WebCatalog.Data;
 using LucaLeone.WebCatalog.Models;
 using LucaLeone.WebCatalog.Services;
 using LucaLeone.WebCatalog.Validation;
-using System.IO;
-using System.Net.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LucaLeone.WebCatalog.Controllers
 {
@@ -18,8 +16,8 @@ namespace LucaLeone.WebCatalog.Controllers
     [ApiController]
     public class CatalogController : ControllerBase
     {
-        private readonly CatalogContext _context;
         private readonly ICatalogService _catalogService;
+        private readonly CatalogContext _context;
 
         public CatalogController(ICatalogService catalogService, CatalogContext context)
         {

@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FileHelpers;
 using LucaLeone.WebCatalog.Data;
 using LucaLeone.WebCatalog.Models;
-using FileHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace LucaLeone.WebCatalog.Services

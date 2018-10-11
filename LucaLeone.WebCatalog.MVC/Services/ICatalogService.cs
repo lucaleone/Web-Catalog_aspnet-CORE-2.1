@@ -1,7 +1,7 @@
-﻿using LucaLeone.WebCatalog.MVC.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LucaLeone.WebCatalog.MVC.Models;
 
 namespace LucaLeone.WebCatalog.MVC.Services
 {

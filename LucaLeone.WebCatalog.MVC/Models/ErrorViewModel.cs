@@ -1,5 +1,3 @@
-using System;
-
 namespace LucaLeone.WebCatalog.MVC.Models
 {
     public class ErrorViewModel

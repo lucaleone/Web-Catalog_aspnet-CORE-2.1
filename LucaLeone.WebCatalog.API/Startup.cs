@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using LucaLeone.WebCatalog.Data;
 using LucaLeone.WebCatalog.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace LucaLeone.WebCatalog
@@ -32,7 +26,8 @@ namespace LucaLeone.WebCatalog
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<CatalogContext>(opt => opt.UseInMemoryDatabase("CatalogContext"));
-            services.AddDbContext<CatalogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LucaLeone.WebCatalogDb")));
+            services.AddDbContext<CatalogContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("LucaLeone.WebCatalogDb")));
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
@@ -44,8 +39,8 @@ namespace LucaLeone.WebCatalog
                         Description =
                             @"RESTful service for managing product catalog. Users can add(POST), edit(PUT), remove(DELETE), view(GET) and search(GET) product, export csv(GET) the catalog.",
                         Version = "v1",
-                        Contact = new Contact { Name = "Luca Leone", Email = "lucaleone@outlook.com" }
-                    });                
+                        Contact = new Contact {Name = "Luca Leone", Email = "lucaleone@outlook.com"}
+                    });
                 c.IncludeXmlComments(GetXMLDocumentation());
             });
         }
@@ -70,7 +65,10 @@ namespace LucaLeone.WebCatalog
             }
 
             app.UseHttpsRedirection();
-            app.UseSwagger(c => { c.RouteTemplate = swaggerDocumentationPath+"/{documentName}/CatalogAPI.json"; });
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = swaggerDocumentationPath + "/{documentName}/CatalogAPI.json";
+            });
             app.UseSwaggerUI(c =>
             {
                 c.RoutePrefix = swaggerDocumentationPath;

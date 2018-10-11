@@ -1,10 +1,5 @@
-﻿using JetBrains.Annotations;
-using LucaLeone.WebCatalog.Models;
+﻿using LucaLeone.WebCatalog.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LucaLeone.WebCatalog.Data
 {
@@ -13,6 +8,7 @@ namespace LucaLeone.WebCatalog.Data
         public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
         {
         }
+
         public DbSet<Product> Products { get; set; }
     }
 }

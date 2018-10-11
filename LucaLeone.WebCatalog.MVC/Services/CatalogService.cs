@@ -14,7 +14,6 @@ namespace LucaLeone.WebCatalog.MVC.Services
     {
         private readonly string _remoteServiceBaseUrl;
         private readonly HttpClient hc;
-        public IConfiguration Configuration { get; }
 
         public CatalogService(IConfiguration configuration)
         {
@@ -25,6 +24,8 @@ namespace LucaLeone.WebCatalog.MVC.Services
             hc.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
         }
+
+        public IConfiguration Configuration { get; }
 
         // GET api/Catalog?page=4
         public async Task<IEnumerable<Product>> GetCatalogPageAsync(int page, int maxNumElem = 10)
