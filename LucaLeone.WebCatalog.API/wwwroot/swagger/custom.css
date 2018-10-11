@@ -1,0 +1,15 @@
+﻿@media only screen and (max-width: 550px) {
+    .topbar-wrapper {
+        flex-flow: column;
+    }
+    .download-url-wrapper {
+        width: 100%;
+    }
+    .opblock-summary {
+        flex-flow: column;
+    }
+    .opblock-summary-method {
+        width: 100%;
+        min-width: auto;
+    }
+}

@@ -37,7 +37,7 @@ namespace LucaLeone.WebCatalog
                     {
                         Title = "CatalogAPI",
                         Description =
-                            @"RESTful service for managing product catalog. Users can add(POST), edit(PUT), remove(DELETE), view(GET) and search(GET) product, export csv(GET) the catalog.",
+                            @"🚀 Asp.NET CORE Web API for managing a products catalog",
                         Version = "v1",
                         Contact = new Contact {Name = "Luca Leone", Email = "lucaleone@outlook.com"}
                     });
@@ -65,6 +65,7 @@ namespace LucaLeone.WebCatalog
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseSwagger(c =>
             {
                 c.RouteTemplate = swaggerDocumentationPath + "/{documentName}/CatalogAPI.json";
@@ -74,6 +75,9 @@ namespace LucaLeone.WebCatalog
                 c.RoutePrefix = swaggerDocumentationPath;
                 c.SwaggerEndpoint("v1/CatalogAPI.json",
                     "Catalog API v1");
+                c.IndexStream = () => GetType().GetTypeInfo().Assembly
+                                               .GetManifestResourceStream("LucaLeone.WebCatalog.API.wwwroot.swagger.index.html");
+                c.InjectStylesheet("/swagger/custom.css");
             });
             var option = new RewriteOptions();
             option.AddRedirect("^$", swaggerDocumentationPath);
