@@ -2,10 +2,15 @@
 Asp.NET CORE web app for managing a products catalog. With the MVC app the users can to add, edit, remove, view and search and export (Excel CSV) product catalog items. The Information about product catalog entities are exposed through RESTful service.  
 
 ## Features
-🚀 Framework: .NET CORE 2.1<br />
+🚀 Framework: ASP.NET CORE 2.1<br />
 ☁ Azure: web app hosted on Azure<br />
 📃 API documentation: Swagger with Swashbuckle.AspNetCore with custom responsive layout<br />
 🏗 Patterns: MVC, Dependency injectin, Builder<br />
+
+## Can I take a look?
+Yes, of course! Here you are:<br />
+MVC app: https://lucaleone-webcatalog.azurewebsites.net/<br />
+API: https://lucaleone-webcatalogapi.azurewebsites.net/
 
 ## For developer only
 ### Models and Convention
