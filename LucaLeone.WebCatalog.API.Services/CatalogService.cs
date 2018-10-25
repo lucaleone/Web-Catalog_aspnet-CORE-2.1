@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileHelpers;
-using LucaLeone.WebCatalog.Data;
-using LucaLeone.WebCatalog.Models;
+using LucaLeone.WebCatalog.API.DataAccess;
+using LucaLeone.WebCatalog.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LucaLeone.WebCatalog.Services
+namespace LucaLeone.WebCatalog.API.Services
 {
     public class CatalogService : ICatalogService
     {
@@ -27,25 +27,20 @@ namespace LucaLeone.WebCatalog.Services
 
         public async Task<IEnumerable<Product>> GetCatalogPageAsync(int page, int maxNumElem = 10)
         {
-            int elem2Skip = (page - 1) * maxNumElem; // skip n pages
+            int elems2Skip = (page - 1) * maxNumElem; // skip n pages
             return await _context.Products
                                  .OrderByDescending(p => p.LastUpdated)
-                                 .Skip(elem2Skip)
+                                 .Skip(elems2Skip)
                                  .Take(maxNumElem)
                                  .ToArrayAsync();
         }
 
-        public async Task<IEnumerable<Product>> SearchProductsAsync(
-            string productName,
-            int? minPrice = null,
-            int? maxPrice = null)
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string productName, uint minPrice, uint? maxPrice)
         {
             return await _context.Products
-                                 .Where(prod =>
-                                     string.IsNullOrEmpty(productName) ||
-                                     prod.Name.Contains(productName))
-                                 .Where(prod => minPrice == null || prod.Price >= minPrice)
-                                 .Where(prod => maxPrice == null || prod.Price <= maxPrice)
+                                 .Where(prod => string.IsNullOrEmpty(productName) || prod.Name.Contains(productName))
+                                 .Where(prod =>  prod.Price >= minPrice)
+                                 .Where(prod =>  prod.Price <= maxPrice)
                                  .OrderByDescending(p => p.LastUpdated)
                                  .ToArrayAsync();
         }
@@ -59,19 +54,26 @@ namespace LucaLeone.WebCatalog.Services
 
         public async Task<(bool, Product)> AddProductAsync(IProductBuilder newProduct)
         {
-            Product entity = newProduct.BuildProduct();
-
-            _context.Products.Add(entity);
-            int saveResult = await _context.SaveChangesAsync();
-            UpdateExportProducts(entity);
-            return (saveResult == 1, entity);
+            try
+            {
+                var entity = newProduct.BuildProduct();
+                _context.Products.Add(entity);
+                await _context.SaveChangesAsync();
+                //todo: this doesn't have to affect the add method
+                UpdateExportProducts(entity);
+                return (true, entity);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<Product> EditProductAsync(Guid id, NewProduct newProduct)
         {
             var product = _context.Products
-                                  .Where(p => p.Id.Equals(id))
-                                  .FirstOrDefault();
+                                  .FirstOrDefault(p => p.Id.Equals(id));
             if (product != null)
             {
                 product.EditProduct(newProduct.Name, newProduct.Photo, newProduct.Price);
@@ -86,8 +88,7 @@ namespace LucaLeone.WebCatalog.Services
         public async Task<Product> DeleteProductAsync(Guid id)
         {
             var product = _context.Products
-                                  .Where(p => p.Id.Equals(id))
-                                  .FirstOrDefault();
+                                  .FirstOrDefault(p => p.Id.Equals(id));
             if (product != null)
             {
                 _context.Products.Remove(product);
@@ -99,11 +100,38 @@ namespace LucaLeone.WebCatalog.Services
             return null;
         }
 
-        public async Task<bool> eraseDb()
+        private void GenerateExportProducts()
         {
-            int saveResult = await _context.Database.ExecuteSqlCommandAsync("delete from Products");
-            GenerateExportProducts();
-            return saveResult > 0;
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Export", "Products.csv");
+            var engine = new FileHelperAsyncEngine<Product>(Encoding.UTF8);
+            engine.HeaderText = engine.GetFileHeader();
+            PrepareExportFile();
+            using (engine.BeginWriteFile(filePath))
+            {
+                engine.WriteNexts(_context.Products);
+            }
+        }
+
+        private void UpdateExportProducts(Product prod)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Export", "Products.csv");
+            var engine = new FileHelperAsyncEngine<Product>(Encoding.UTF8);
+            PrepareExportFile();
+            using (engine.BeginAppendToFile(filePath))
+            {
+                engine.WriteNext(prod);
+            }
+        }
+
+        private void PrepareExportFile()
+        {
+            var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "Export");
+            var filePath = Path.Combine(dirPath, "Products.csv");
+            if (!Directory.Exists(dirPath))
+                Directory.CreateDirectory(dirPath);
+            if (!File.Exists(filePath))
+                using (var sw = File.CreateText(filePath))
+                    sw.WriteLine(@"Id,Name,Photo,Price,LastUpdated");
         }
 
         public async Task<bool> InitDb()
@@ -143,38 +171,11 @@ namespace LucaLeone.WebCatalog.Services
             return saveResult == 1;
         }
 
-        private void GenerateExportProducts()
+        public async Task<bool> EraseDb()
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Export", "Products.csv");
-            var engine = new FileHelperAsyncEngine<Product>(Encoding.UTF8);
-            engine.HeaderText = engine.GetFileHeader();
-            PrepareExportFile();
-            using (engine.BeginWriteFile(filePath))
-            {
-                engine.WriteNexts(_context.Products);
-            }
-        }
-
-        private void UpdateExportProducts(Product prod)
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Export", "Products.csv");
-            var engine = new FileHelperAsyncEngine<Product>(Encoding.UTF8);
-            PrepareExportFile();
-            using (engine.BeginAppendToFile(filePath))
-            {
-                engine.WriteNext(prod);
-            }
-        }
-
-        private void PrepareExportFile()
-        {
-            var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "Export");
-            var filePath = Path.Combine(dirPath, "Products.csv");
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
-            if (!File.Exists(filePath))
-                using (var sw = File.CreateText(filePath))
-                    sw.WriteLine(@"Id,Name,Photo,Price,LastUpdated");
+            int saveResult = await _context.Database.ExecuteSqlCommandAsync("delete from Products");
+            GenerateExportProducts();
+            return saveResult > 0;
         }
     }
 }

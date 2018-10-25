@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using LucaLeone.WebCatalog.Data;
-using LucaLeone.WebCatalog.Models;
-using LucaLeone.WebCatalog.Services;
-using LucaLeone.WebCatalog.Validation;
+using LucaLeone.WebCatalog.API.Models;
+using LucaLeone.WebCatalog.API.Services;
+using LucaLeone.WebCatalog.API.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LucaLeone.WebCatalog.Controllers
+namespace LucaLeone.WebCatalog.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CatalogController : ControllerBase
     {
         private readonly ICatalogService _catalogService;
-        private readonly CatalogContext _context;
+        private readonly ICatalogValidation _validationService;
 
-        public CatalogController(ICatalogService catalogService, CatalogContext context)
+        public CatalogController(ICatalogService catalogService,
+                                 ICatalogValidation validationService)
         {
-            _context = context;
             _catalogService = catalogService;
+            _validationService = validationService;
         }
 
         /// <summary>
@@ -39,15 +39,15 @@ namespace LucaLeone.WebCatalog.Controllers
         /// <response code="400">If the query is not valid</response>
         [HttpGet]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Product>), 200)]
-        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCatalog([FromQuery] int page = 1, int maxNumElem = 10)
         {
-            if (InputValidation.ValidateGetCatalogInput(page, ref maxNumElem) == false)
+            if (!_validationService.ValidateGetCatalog(page, maxNumElem))
                 return BadRequest("Query not valid");
 
-            var Products = await _catalogService.GetCatalogPageAsync(page, maxNumElem);
-            return Ok(Products);
+            var products = await _catalogService.GetCatalogPageAsync(page, maxNumElem);
+            return Ok(products);
         }
 
         /// <summary>
@@ -66,17 +66,19 @@ namespace LucaLeone.WebCatalog.Controllers
         [HttpGet]
         [Route("[action]")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Product>), 200)]
-        [ProducesResponseType(typeof(string), 400)]
-        public async Task<IActionResult> Search([FromQuery] string name = null,
-                                                [FromQuery] int? minPrice = null,
-                                                [FromQuery] int? maxPrice = null)
+        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Search([FromQuery] string name = "",
+                                                [FromQuery] uint minPrice = 0,
+                                                [FromQuery] uint? maxPrice = null)
         {
-            if (InputValidation.ValidateSearchInput(ref name, minPrice, maxPrice) == false)
+            //todo: check with name null
+            name = name.Trim();
+            if (!_validationService.ValidateSearch(minPrice, maxPrice))
                 return BadRequest("Query not valid");
 
-            var Products = await _catalogService.SearchProductsAsync(name, minPrice, maxPrice);
-            return Ok(Products);
+            var products = await _catalogService.SearchProductsAsync(name, minPrice, maxPrice);
+            return Ok(products);
         }
 
         /// <summary>
@@ -87,20 +89,20 @@ namespace LucaLeone.WebCatalog.Controllers
         ///     GET api/Catalog/GetProduct?id=8916c69a-8041-4768-8e0d-a391361ff732
         /// </remarks>
         /// <param name="id">Id of the Product to search</param>
-        /// <returns>A Product with matchind Id</returns>
-        /// <response code="200">Returns a Product with matchind Id</response>
+        /// <returns>A Product with matching Id</returns>
+        /// <response code="200">Returns a Product with matching Id</response>
         /// <response code="400">If the Id does not exist</response>
         [HttpGet]
         [Route("[action]")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(Product), 200)]
-        [ProducesResponseType(typeof(Guid), 400)]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProduct([FromQuery] Guid id)
         {
-            var Products = await _catalogService.GetProduct(id);
-            if (Products != null)
-                return Ok(Products);
-            return BadRequest(id);
+            var product = await _catalogService.GetProduct(id);
+            if (product == null)
+                return NotFound(id);
+            return Ok(product);
         }
 
         /// <summary>
@@ -116,8 +118,8 @@ namespace LucaLeone.WebCatalog.Controllers
         [HttpGet]
         [Route("[action]")]
         [Produces("text/csv")]
-        [ProducesResponseType(typeof(File), 200)]
-        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(File), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Export()
         {
             var path = Path.Combine(@"Export", "Products.csv");
@@ -128,8 +130,6 @@ namespace LucaLeone.WebCatalog.Controllers
                 return File(
                     fileContents: await new StreamContent(stream).ReadAsByteArrayAsync(),
                     contentType: "text/csv",
-                    // By setting a file download name the framework will
-                    // automatically add the attachment Content-Disposition header
                     fileDownloadName: "ProductsExport.csv"
                 );
             }
@@ -148,15 +148,15 @@ namespace LucaLeone.WebCatalog.Controllers
         /// <returns>A newly-created Product</returns>
         /// <response code="201">Returns the newly-created Product</response>
         /// <response code="400">If the Product is not valid</response>
-        [HttpPost]
+        [HttpPut]
         [Route("[action]")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddProduct([FromBody] NewProduct newProduct)
         {
-            if (InputValidation.ValidateProductInput(newProduct) == false)
-                return BadRequest("New product not valid");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             (bool result, Product product) = await _catalogService.AddProductAsync(newProduct);
             if (result)
                 return StatusCode(StatusCodes.Status201Created, product);
@@ -179,14 +179,14 @@ namespace LucaLeone.WebCatalog.Controllers
         [HttpPut]
         [Route("[action]")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(Product), 200)]
-        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditProduct([FromQuery] Guid id,
                                                      [FromBody] NewProduct newProduct)
         {
-            if (InputValidation.ValidateProductInput(newProduct) == false)
+            if (!ModelState.IsValid)
                 return BadRequest("New product not valid");
-            Product result = await _catalogService.EditProductAsync(id, newProduct);
+            var result = await _catalogService.EditProductAsync(id, newProduct);
             if (result != null)
                 return Ok(result);
             return BadRequest("Error: ID doesn't exist");
@@ -206,11 +206,11 @@ namespace LucaLeone.WebCatalog.Controllers
         [HttpDelete]
         [Route("[action]")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(Product), 200)]
-        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteProduct([FromQuery] Guid id)
         {
-            Product result = await _catalogService.DeleteProductAsync(id);
+            var result = await _catalogService.DeleteProductAsync(id);
             if (result != null)
                 return Ok(result);
             return BadRequest("Error: ID doesn't exist");
@@ -248,7 +248,7 @@ namespace LucaLeone.WebCatalog.Controllers
         [Produces("text/plain")]
         public async Task<IActionResult> EraseDb()
         {
-            bool res = await _catalogService.eraseDb();
+            bool res = await _catalogService.EraseDb();
             return Ok(res
                 ? "Database cleaned, go back and refresh"
                 : "Database was already empty, go back and refresh");

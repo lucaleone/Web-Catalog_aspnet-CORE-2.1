@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FileHelpers;
 
-namespace LucaLeone.WebCatalog.Models
+namespace LucaLeone.WebCatalog.API.Models
 {
     /// <summary>
     ///     Product describe a product item in the catalog
@@ -14,7 +14,7 @@ namespace LucaLeone.WebCatalog.Models
     public class Product
     {
         /// <summary>
-        ///     Base Product Constructor, inizialize the Product Id
+        ///     Base Product Constructor, initialize the Product Id
         /// </summary>
         private Product()
         {

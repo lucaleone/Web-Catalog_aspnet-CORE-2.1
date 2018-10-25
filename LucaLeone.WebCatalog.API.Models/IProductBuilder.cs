@@ -1,4 +1,4 @@
-﻿namespace LucaLeone.WebCatalog.Models
+﻿namespace LucaLeone.WebCatalog.API.Models
 {
     public interface IProductBuilder
     {

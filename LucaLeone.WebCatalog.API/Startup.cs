@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using LucaLeone.WebCatalog.Data;
-using LucaLeone.WebCatalog.Services;
+using LucaLeone.WebCatalog.API.DataAccess;
+using LucaLeone.WebCatalog.API.Services;
+using LucaLeone.WebCatalog.API.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace LucaLeone.WebCatalog
+namespace LucaLeone.WebCatalog.API
 {
     public class Startup
     {
@@ -29,6 +30,7 @@ namespace LucaLeone.WebCatalog
             services.AddDbContext<CatalogContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("LucaLeone.WebCatalogDb")));
             services.AddScoped<ICatalogService, CatalogService>();
+            services.AddSingleton<ICatalogValidation, CatalogValidation>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
             {
@@ -76,7 +78,8 @@ namespace LucaLeone.WebCatalog
                 c.SwaggerEndpoint("v1/CatalogAPI.json",
                     "Catalog API v1");
                 c.IndexStream = () => GetType().GetTypeInfo().Assembly
-                                               .GetManifestResourceStream("LucaLeone.WebCatalog.API.wwwroot.swagger.index.html");
+                                               .GetManifestResourceStream(
+                                                   "LucaLeone.WebCatalog.API.wwwroot.swagger.index.html");
                 c.InjectStylesheet("/swagger/custom.css");
             });
             var option = new RewriteOptions();

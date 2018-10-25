@@ -29,10 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FileHelpers" Version="3.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Models\LucaLeone.WebCatalog.API.Models.csproj" />
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Services\LucaLeone.WebCatalog.API.Services.csproj" />
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Validation\LucaLeone.WebCatalog.API.Validation.csproj" />
   </ItemGroup>
 
 </Project>

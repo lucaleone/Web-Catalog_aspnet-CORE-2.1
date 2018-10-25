@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace LucaLeone.WebCatalog
+namespace LucaLeone.WebCatalog.API
 {
     public class Program
     {
