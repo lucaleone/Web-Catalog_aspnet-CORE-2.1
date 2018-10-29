@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileHelpers;
-using LucaLeone.WebCatalog.API.DataAccess;
+using LucaLeone.WebCatalog.API.DataAccessors;
 using LucaLeone.WebCatalog.API.Models;
 using Microsoft.EntityFrameworkCore;
 

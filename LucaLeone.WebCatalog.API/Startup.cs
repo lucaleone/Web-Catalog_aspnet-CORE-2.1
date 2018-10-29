@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using LucaLeone.WebCatalog.API.DataAccess;
+using LucaLeone.WebCatalog.API.DataAccessors;
 using LucaLeone.WebCatalog.API.Services;
 using LucaLeone.WebCatalog.API.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -26,11 +26,13 @@ namespace LucaLeone.WebCatalog.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var ttt = Configuration.GetConnectionString("LucaLeone.WebCatalogDb");
+            Console.WriteLine(ttt);
             //services.AddDbContext<CatalogContext>(opt => opt.UseInMemoryDatabase("CatalogContext"));
             services.AddDbContext<CatalogContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("LucaLeone.WebCatalogDb")));
             services.AddScoped<ICatalogService, CatalogService>();
-            services.AddSingleton<ICatalogValidation, CatalogValidation>();
+            services.AddSingleton<ICatalogValidator, CatalogValidator>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
             {
@@ -65,6 +67,7 @@ namespace LucaLeone.WebCatalog.API
             {
                 app.UseHsts();
             }
+            app.UseStatusCodePages("text/plain", "Status code page, status code: {0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

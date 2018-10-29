@@ -1,7 +1,7 @@
 ﻿using LucaLeone.WebCatalog.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LucaLeone.WebCatalog.API.DataAccess
+namespace LucaLeone.WebCatalog.API.DataAccessors
 {
     public class CatalogContext : DbContext
     {

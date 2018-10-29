@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LucaLeone.WebCatalog.API.Exceptions;
 using LucaLeone.WebCatalog.API.Models;
 using LucaLeone.WebCatalog.API.Services;
 using LucaLeone.WebCatalog.API.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace LucaLeone.WebCatalog.API.Controllers
 {
@@ -16,17 +18,21 @@ namespace LucaLeone.WebCatalog.API.Controllers
     public class CatalogController : ControllerBase
     {
         private readonly ICatalogService _catalogService;
-        private readonly ICatalogValidation _validationService;
+        private readonly ICatalogValidator _validationService;
+
+        public IConfiguration Configuration { get; }
 
         public CatalogController(ICatalogService catalogService,
-                                 ICatalogValidation validationService)
+                                 ICatalogValidator validationService, IConfiguration configuration)
         {
             _catalogService = catalogService;
             _validationService = validationService;
+            Configuration = configuration;
+
         }
 
         /// <summary>
-        ///     Search for products that mach the query
+        ///     Search for products that match the query
         /// </summary>
         /// <remarks>
         ///     Sample request:
@@ -51,7 +57,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         }
 
         /// <summary>
-        ///     Search for products that mach the query
+        ///     Search for products that match the query
         /// </summary>
         /// <remarks>
         ///     Sample request:
@@ -74,11 +80,20 @@ namespace LucaLeone.WebCatalog.API.Controllers
         {
             //todo: check with name null
             name = name.Trim();
-            if (!_validationService.ValidateSearch(minPrice, maxPrice))
-                return BadRequest("Query not valid");
-
-            var products = await _catalogService.SearchProductsAsync(name, minPrice, maxPrice);
-            return Ok(products);
+            try
+            {
+                _validationService.ValidateSearch(minPrice, maxPrice);
+                var products = await _catalogService.SearchProductsAsync(name, minPrice, maxPrice);
+                return Ok(products);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>

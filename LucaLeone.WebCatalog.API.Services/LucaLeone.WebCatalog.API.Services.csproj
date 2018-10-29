@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LucaLeone.WebCatalog.API.DataAccess\LucaLeone.WebCatalog.API.DataAccess.csproj" />
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.DataAccessors\LucaLeone.WebCatalog.API.DataAccessors.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Models\LucaLeone.WebCatalog.API.Models.csproj" />
   </ItemGroup>
 

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace LucaLeone.WebCatalog.API.Validation
 {
-    public interface ICatalogValidation
+    public interface ICatalogValidator
     {
-        bool ValidateSearch(uint minPrice, uint? maxPrice);
+        void ValidateSearch(uint minPrice, uint? maxPrice);
         bool ValidateGetCatalog(int page, int maxNumElem);
     }
 }
