@@ -1,11 +1,12 @@
 ﻿using LucaLeone.WebCatalog.API.Exceptions;
 
-namespace LucaLeone.WebCatalog.API.Validation
+namespace LucaLeone.WebCatalog.API.Validators
 {
     public class CatalogValidator : ICatalogValidator
     {
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <exception cref="LucaLeone.WebCatalog.API.Exceptions.ValidationException"></exception>
         /// <param name="minPrice"></param>
@@ -20,7 +21,8 @@ namespace LucaLeone.WebCatalog.API.Validation
         public bool ValidateGetCatalog(int page, int maxNumElem)
         {
             const int maxElemToReturn = 50;
-            return page > 0 && maxNumElem <= maxElemToReturn;
+            var isValid = page > 0 && maxNumElem <= maxElemToReturn;
+            return isValid;
         }
     }
 }

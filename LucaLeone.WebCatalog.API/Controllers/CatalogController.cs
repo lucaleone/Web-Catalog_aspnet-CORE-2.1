@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using LucaLeone.WebCatalog.API.Exceptions;
+using LucaLeone.WebCatalog.API.Extensions;
 using LucaLeone.WebCatalog.API.Models;
 using LucaLeone.WebCatalog.API.Services;
-using LucaLeone.WebCatalog.API.Validation;
+using LucaLeone.WebCatalog.API.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace LucaLeone.WebCatalog.API.Controllers
 {
@@ -19,16 +26,17 @@ namespace LucaLeone.WebCatalog.API.Controllers
     {
         private readonly ICatalogService _catalogService;
         private readonly ICatalogValidator _validationService;
+        private readonly ILogger _logger;
 
-        public IConfiguration Configuration { get; }
 
         public CatalogController(ICatalogService catalogService,
-                                 ICatalogValidator validationService, IConfiguration configuration)
+                                 ICatalogValidator validationService,
+                                 ILogger<CatalogController> logger)
         {
             _catalogService = catalogService;
             _validationService = validationService;
-            Configuration = configuration;
-
+            _logger = logger;
+            _logger.LogThisMethod();
         }
 
         /// <summary>
@@ -49,6 +57,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCatalog([FromQuery] int page = 1, int maxNumElem = 10)
         {
+            _logger.LogThisMethod();
             if (!_validationService.ValidateGetCatalog(page, maxNumElem))
                 return BadRequest("Query not valid");
 
@@ -78,6 +87,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
                                                 [FromQuery] uint minPrice = 0,
                                                 [FromQuery] uint? maxPrice = null)
         {
+            _logger.LogThisMethod();
             //todo: check with name null
             name = name.Trim();
             try
@@ -114,6 +124,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProduct([FromQuery] Guid id)
         {
+            _logger.LogThisMethod();
             var product = await _catalogService.GetProduct(id);
             if (product == null)
                 return NotFound(id);
@@ -137,6 +148,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Export()
         {
+            _logger.LogThisMethod();
             var path = Path.Combine(@"Export", "Products.csv");
             if (!System.IO.File.Exists(path))
                 return BadRequest("File does not exist");
@@ -170,6 +182,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddProduct([FromBody] NewProduct newProduct)
         {
+            _logger.LogThisMethod();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             (bool result, Product product) = await _catalogService.AddProductAsync(newProduct);
@@ -199,6 +212,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         public async Task<IActionResult> EditProduct([FromQuery] Guid id,
                                                      [FromBody] NewProduct newProduct)
         {
+            _logger.LogThisMethod();
             if (!ModelState.IsValid)
                 return BadRequest("New product not valid");
             var result = await _catalogService.EditProductAsync(id, newProduct);
@@ -225,6 +239,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteProduct([FromQuery] Guid id)
         {
+            _logger.LogThisMethod();
             var result = await _catalogService.DeleteProductAsync(id);
             if (result != null)
                 return Ok(result);
@@ -245,6 +260,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [Produces("text/plain")]
         public async Task<IActionResult> InitDb()
         {
+            _logger.LogThisMethod();
             await _catalogService.InitDb();
             return Ok("DB init done! go back and refresh");
         }
@@ -263,6 +279,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [Produces("text/plain")]
         public async Task<IActionResult> EraseDb()
         {
+            _logger.LogThisMethod();
             bool res = await _catalogService.EraseDb();
             return Ok(res
                 ? "Database cleaned, go back and refresh"

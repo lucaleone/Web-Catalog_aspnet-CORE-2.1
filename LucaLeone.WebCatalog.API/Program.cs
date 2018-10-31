@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace LucaLeone.WebCatalog.API
 {
@@ -16,6 +17,12 @@ namespace LucaLeone.WebCatalog.API
                    .CaptureStartupErrors(true)
                    .UseSetting("detailedErrors", "true")
 #endif
+                   .ConfigureLogging(logging =>
+                   {
+                       logging.ClearProviders();
+                       logging.AddConsole();
+                       //logging.AddEventSourceLogger();
+                   })
                    .UseStartup<Startup>();
     }
 }

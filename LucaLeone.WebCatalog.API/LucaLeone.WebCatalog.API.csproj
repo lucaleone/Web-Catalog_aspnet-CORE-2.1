@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Extensions\LucaLeone.WebCatalog.API.Extensions.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Models\LucaLeone.WebCatalog.API.Models.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Services\LucaLeone.WebCatalog.API.Services.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Validators\LucaLeone.WebCatalog.API.Validators.csproj" />

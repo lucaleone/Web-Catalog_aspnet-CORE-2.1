@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LucaLeone.WebCatalog.API.Validation
+﻿namespace LucaLeone.WebCatalog.API.Validators
 {
     public interface ICatalogValidator
     {

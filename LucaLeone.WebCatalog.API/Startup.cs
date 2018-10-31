@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using LucaLeone.WebCatalog.API.DataAccessors;
 using LucaLeone.WebCatalog.API.Services;
-using LucaLeone.WebCatalog.API.Validation;
+using LucaLeone.WebCatalog.API.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
