@@ -31,6 +31,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
+    <PackageReference Include="PowerupCore" Version="1.0.2" />
+    <PackageReference Include="PowerupCore.Web" Version="1.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
   </ItemGroup>
 
@@ -38,7 +40,6 @@
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Extensions\LucaLeone.WebCatalog.API.Extensions.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Models\LucaLeone.WebCatalog.API.Models.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Services\LucaLeone.WebCatalog.API.Services.csproj" />
-    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Validators\LucaLeone.WebCatalog.API.Validators.csproj" />
   </ItemGroup>
 
 </Project>

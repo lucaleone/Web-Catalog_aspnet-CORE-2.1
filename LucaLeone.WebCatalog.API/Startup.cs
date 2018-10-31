@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using LucaLeone.WebCatalog.API.DataAccessors;
 using LucaLeone.WebCatalog.API.Services;
-using LucaLeone.WebCatalog.API.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +31,6 @@ namespace LucaLeone.WebCatalog.API
             services.AddDbContext<CatalogContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("LucaLeone.WebCatalogDb")));
             services.AddScoped<ICatalogService, CatalogService>();
-            services.AddSingleton<ICatalogValidator, CatalogValidator>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen(c =>
             {

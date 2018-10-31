@@ -27,7 +27,7 @@ namespace LucaLeone.WebCatalog.API.Services
 
         public async Task<IEnumerable<Product>> GetCatalogPageAsync(int page, int maxNumElem = 10)
         {
-            int elems2Skip = (page - 1) * maxNumElem; // skip n pages
+            var elems2Skip = (page - 1) * maxNumElem; // skip n pages
             return await _context.Products
                                  .OrderByDescending(p => p.LastUpdated)
                                  .Skip(elems2Skip)
@@ -35,12 +35,12 @@ namespace LucaLeone.WebCatalog.API.Services
                                  .ToArrayAsync();
         }
 
-        public async Task<IEnumerable<Product>> SearchProductsAsync(string productName, uint minPrice, uint? maxPrice)
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string productName, int minPrice, int? maxPrice)
         {
             return await _context.Products
                                  .Where(prod => string.IsNullOrEmpty(productName) || prod.Name.Contains(productName))
                                  .Where(prod =>  prod.Price >= minPrice)
-                                 .Where(prod =>  prod.Price <= maxPrice)
+                                 .Where(prod =>  prod.Price <= maxPrice.GetValueOrDefault())
                                  .OrderByDescending(p => p.LastUpdated)
                                  .ToArrayAsync();
         }
@@ -59,8 +59,6 @@ namespace LucaLeone.WebCatalog.API.Services
                 var entity = newProduct.BuildProduct();
                 _context.Products.Add(entity);
                 await _context.SaveChangesAsync();
-                //todo: this doesn't have to affect the add method
-                UpdateExportProducts(entity);
                 return (true, entity);
             }
             catch (Exception e)
@@ -78,7 +76,6 @@ namespace LucaLeone.WebCatalog.API.Services
             {
                 product.EditProduct(newProduct.Name, newProduct.Photo, newProduct.Price);
                 int saveResult = await _context.SaveChangesAsync();
-                GenerateExportProducts();
                 return saveResult == 1 ? product : null;
             }
 
@@ -93,45 +90,10 @@ namespace LucaLeone.WebCatalog.API.Services
             {
                 _context.Products.Remove(product);
                 int saveResult = await _context.SaveChangesAsync();
-                GenerateExportProducts();
                 return saveResult == 1 ? product : null;
             }
 
             return null;
-        }
-
-        private void GenerateExportProducts()
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Export", "Products.csv");
-            var engine = new FileHelperAsyncEngine<Product>(Encoding.UTF8);
-            engine.HeaderText = engine.GetFileHeader();
-            PrepareExportFile();
-            using (engine.BeginWriteFile(filePath))
-            {
-                engine.WriteNexts(_context.Products);
-            }
-        }
-
-        private void UpdateExportProducts(Product prod)
-        {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Export", "Products.csv");
-            var engine = new FileHelperAsyncEngine<Product>(Encoding.UTF8);
-            PrepareExportFile();
-            using (engine.BeginAppendToFile(filePath))
-            {
-                engine.WriteNext(prod);
-            }
-        }
-
-        private void PrepareExportFile()
-        {
-            var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "Export");
-            var filePath = Path.Combine(dirPath, "Products.csv");
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
-            if (!File.Exists(filePath))
-                using (var sw = File.CreateText(filePath))
-                    sw.WriteLine(@"Id,Name,Photo,Price,LastUpdated");
         }
 
         public async Task<bool> InitDb()
@@ -147,14 +109,14 @@ namespace LucaLeone.WebCatalog.API.Services
             }.BuildProduct());
             _context.Products.Add(new NewProduct
             {
-                Name = "Black leather chair, super confort!",
+                Name = "Black leather chair, super comfort!",
                 Photo =
                     @"https://www.modernmanhattan.com/image/data/demo/mmh-88535-Zahara-Black-Leather-Club-Chair-5.jpg",
                 Price = 85.35m
             }.BuildProduct());
             _context.Products.Add(new NewProduct
             {
-                Name = "Wooden desk, the confort is guaranteed!",
+                Name = "Wooden desk, the comfort is guaranteed!",
                 Photo =
                     @"https://cdn.shopify.com/s/files/1/0223/2583/products/Weathered_Oak_Kneehole_Desk_RNG063_1024x1024.jpg",
                 Price = 135.99m
@@ -167,38 +129,13 @@ namespace LucaLeone.WebCatalog.API.Services
             }.BuildProduct());
 
             int saveResult = await _context.SaveChangesAsync();
-            GenerateExportProducts();
             return saveResult == 1;
         }
 
         public async Task<bool> EraseDb()
         {
             int saveResult = await _context.Database.ExecuteSqlCommandAsync("delete from Products");
-            GenerateExportProducts();
             return saveResult > 0;
         }
     }
 }
-
-// FUTURE IMPLEMENTATION
-//private static void GenerateExportProducts(Product prod, FileMode fileMode = FileMode.Append)
-//{
-//    var path = Path.Combine(@"Export", "Products.csv");
-//    using (var engine = new FileHelperAsyncEngine<Product>())
-//    {
-//        engine.HeaderText = engine.GetFileHeader();
-//        switch (fileMode)
-//        {
-//            case FileMode.Append:
-//                engine.BeginAppendToFile(@"Export\Products.csv");
-//                break;
-//            case FileMode.Create:
-//            case FileMode.CreateNew:
-//                engine.BeginWriteFile(@"Export\Products.csv");
-//                break;
-//            default:
-//                return;
-//        }
-//        engine.WriteNext(prod);
-//    }
-//}

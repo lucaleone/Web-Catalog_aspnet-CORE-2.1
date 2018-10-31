@@ -12,8 +12,8 @@ namespace LucaLeone.WebCatalog.API.Services
         Task<IEnumerable<Product>> GetCatalogPageAsync(int page, int maxNumElem);
 
         Task<IEnumerable<Product>> SearchProductsAsync(string productName,
-                                                       uint minPrice,
-                                                       uint? maxPrice);
+                                                       int minPrice,
+                                                       int? maxPrice);
 
         Task<(bool, Product)> AddProductAsync(IProductBuilder newProduct);
         Task<Product> EditProductAsync(Guid id, NewProduct newProduct);
