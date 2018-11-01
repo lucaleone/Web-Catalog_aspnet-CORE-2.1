@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="PowerupCore" Version="1.0.2" />
@@ -37,8 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Extensions\LucaLeone.WebCatalog.API.Extensions.csproj" />
-    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Models\LucaLeone.WebCatalog.API.Models.csproj" />
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.DTO\LucaLeone.WebCatalog.API.DTO.csproj" />
+    <ProjectReference Include="..\LucaLeone.WebCatalog.API.Entities\LucaLeone.WebCatalog.API.Entities.csproj" />
     <ProjectReference Include="..\LucaLeone.WebCatalog.API.Services\LucaLeone.WebCatalog.API.Services.csproj" />
   </ItemGroup>
 

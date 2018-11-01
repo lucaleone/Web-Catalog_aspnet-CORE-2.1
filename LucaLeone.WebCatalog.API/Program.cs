@@ -20,8 +20,12 @@ namespace LucaLeone.WebCatalog.API
                    .ConfigureLogging(logging =>
                    {
                        logging.ClearProviders();
-                       logging.AddConsole();
-                       //logging.AddEventSourceLogger();
+#if DEBUG
+                       logging.AddDebug();
+#endif
+#if RELEASE
+                       logging.AddAzureWebAppDiagnostics();
+#endif
                    })
                    .UseStartup<Startup>();
     }

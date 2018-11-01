@@ -1,4 +1,4 @@
-﻿using LucaLeone.WebCatalog.API.Models;
+﻿using LucaLeone.WebCatalog.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LucaLeone.WebCatalog.API.DataAccessors

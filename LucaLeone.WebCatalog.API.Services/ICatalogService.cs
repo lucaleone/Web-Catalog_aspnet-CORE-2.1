@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LucaLeone.WebCatalog.API.Models;
+using LucaLeone.WebCatalog.API.DTO;
 
 namespace LucaLeone.WebCatalog.API.Services
 {
     public interface ICatalogService
     {
-        Task<Product> GetProduct(Guid id);
-        Task<IEnumerable<Product>> GetAllCatalogAsync();
-        Task<IEnumerable<Product>> GetCatalogPageAsync(int page, int maxNumElem);
-
-        Task<IEnumerable<Product>> SearchProductsAsync(string productName,
-                                                       int minPrice,
-                                                       int? maxPrice);
-
-        Task<(bool, Product)> AddProductAsync(IProductBuilder newProduct);
-        Task<Product> EditProductAsync(Guid id, NewProduct newProduct);
-        Task<Product> DeleteProductAsync(Guid id);
+        Task<ProductDto> GetProduct(Guid id);
+        Task<IEnumerable<ProductDto>> GetCatalogPageAsync(int page, int maxNumElem);
+        Task<IEnumerable<ProductDto>> SearchProductsAsync(SearchDto search);
+        Task<ProductDto> AddProductAsync(ProductDto newProduct);
+        Task<ProductDto> EditProductAsync(Guid id, ProductDto newProduct);
+        Task<ProductDto> DeleteProductAsync(Guid id);
         Task<bool> InitDb();
         Task<bool> EraseDb();
     }

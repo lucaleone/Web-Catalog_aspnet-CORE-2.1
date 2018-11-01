@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
-namespace LucaLeone.WebCatalog.API.Models.View
+namespace LucaLeone.WebCatalog.API.DTO
 {
-    public class SearchView : IValidatableObject
+    public class SearchDto : IValidatableObject
     {
         /// <summary>
         ///     [Optional] Name of the Product to search.
@@ -31,10 +29,10 @@ namespace LucaLeone.WebCatalog.API.Models.View
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
-            Validator.TryValidateProperty(this.MinPrice,
+            Validator.TryValidateProperty(MinPrice,
                 new ValidationContext(this, null, null) { MemberName = nameof(MinPrice) },
                 results);
-            Validator.TryValidateProperty(this.MaxPrice,
+            Validator.TryValidateProperty(MaxPrice,
                 new ValidationContext(this, null, null) { MemberName = nameof(MaxPrice) },
                 results);
             if (MaxPrice.HasValue && MinPrice > MaxPrice.Value)

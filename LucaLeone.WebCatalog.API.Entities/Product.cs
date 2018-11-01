@@ -2,23 +2,20 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using FileHelpers;
 
-namespace LucaLeone.WebCatalog.API.Models
+namespace LucaLeone.WebCatalog.API.Entities
 {
     /// <summary>
     ///     Product describe a product item in the catalog
     /// </summary>
     [Serializable]
-    [DelimitedRecord(",")]
-    public class Product
+    public class Product : BaseEntity
     {
         /// <summary>
         ///     Base Product Constructor, initialize the Product Id
         /// </summary>
         private Product()
         {
-            Id = Guid.NewGuid();
             LastUpdated = DateTime.UtcNow;
         }
 
@@ -32,37 +29,21 @@ namespace LucaLeone.WebCatalog.API.Models
             Price = price;
         }
 
-        /// <summary>Id of the product</summary>
-        [Key]
-        [Required]
-        [FieldQuoted]
-        public Guid Id { get; set; }
-
         /// <summary>Name of the product</summary>
         [Required]
         [MaxLength(200)]
-        [FieldQuoted]
         public string Name { get; set; }
 
         /// <summary>Photo url of the product</summary>
         [DefaultValue("")]
         [Url]
-        [FieldQuoted]
         public string Photo { get; set; }
 
         /// <summary>Price of the product</summary>
         [Required]
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18,2)")]
-        [FieldQuoted]
         public decimal Price { get; set; }
-
-        /// <summary>UTC time of the last update of the product</summary>
-        [Required]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
-        [FieldQuoted]
-        public DateTime LastUpdated { get; set; }
 
         /// <summary>
         ///     Set product detail and automatically update the LastUpdated field

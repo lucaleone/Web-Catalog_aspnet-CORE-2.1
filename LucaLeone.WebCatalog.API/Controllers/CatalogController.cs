@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using LucaLeone.WebCatalog.API.Models;
-using LucaLeone.WebCatalog.API.Models.View;
+using LucaLeone.WebCatalog.API.DTO;
+using LucaLeone.WebCatalog.API.Entities;
 using LucaLeone.WebCatalog.API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PowerUp;
 using PowerUp.Web;
@@ -58,8 +51,11 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCatalog(
-            [FromQuery] [Range(1, int.MaxValue, ErrorMessage = "The page number must be equal or greater than 1.")] int page = 1,
-            [Range(1, 50, ErrorMessage = "The minimum number of element but be between 1 and 50.")] int maxNumElem = 10)
+            [FromQuery]
+            [Range(1, int.MaxValue,ErrorMessage = "The page number must be equal or greater than 1.")]
+            int page = 1,
+            [Range(1, 50, ErrorMessage = "The minimum number of element but be between 1 and 50.")]
+            int maxNumElem = 10)
         {
             _logger.LogThisMethod();
             var products = await _catalogService.GetCatalogPageAsync(page, maxNumElem);
@@ -81,19 +77,11 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [Produces(MediaType.ApplicationJson)]
         [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Search([FromQuery]SearchView search)
+        public async Task<IActionResult> Search([FromQuery] SearchDto search)
         {
             _logger.LogThisMethod();
-            search.Name = search.Name.Trim();
-            try
-            {
-                var products = await _catalogService.SearchProductsAsync(search.Name, search.MinPrice, search.MaxPrice);
-                return Ok(products);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var products = await _catalogService.SearchProductsAsync(search);
+            return Ok(products);
         }
 
         /// <summary>
@@ -116,7 +104,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         {
             _logger.LogThisMethod();
             var product = await _catalogService.GetProduct(id);
-            if (product == null)
+            if (product.IsNull())
                 return NotFound(id);
             return Ok(product);
         }
@@ -139,13 +127,13 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [Produces(MediaType.ApplicationJson)]
         [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddProduct([FromBody] NewProduct newProduct)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDto newProduct)
         {
             _logger.LogThisMethod();
-            (bool result, Product product) = await _catalogService.AddProductAsync(newProduct);
-            if (result)
-                return StatusCode(StatusCodes.Status201Created, product);
-            return BadRequest("New product not added");
+            var productAdded = await _catalogService.AddProductAsync(newProduct);
+            if (productAdded.IsNull())
+                return BadRequest();
+            return StatusCode(StatusCodes.Status201Created, productAdded);
         }
 
         /// <summary>
@@ -157,7 +145,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         ///     {"name":"test modified", "price":"52.99", "photo":"test2new.png"}
         /// </remarks>
         /// <param name="id">Id of the Product to edit</param>
-        /// <param name="newProduct">Customized product</param>
+        /// <param name="editProduct">Product edited</param>
         /// <returns>The updated Product</returns>
         /// <response code="200">Returns the updated Product</response>
         /// <response code="400">If the Id does not exist in the Catalog</response>
@@ -167,15 +155,15 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditProduct([FromQuery] Guid id,
-                                                     [FromBody] NewProduct newProduct)
+                                                     [FromBody] ProductDto editProduct)
         {
             _logger.LogThisMethod();
             if (!ModelState.IsValid)
-                return BadRequest("New product not valid");
-            var result = await _catalogService.EditProductAsync(id, newProduct);
-            if (result != null)
-                return Ok(result);
-            return BadRequest("Error: ID doesn't exist");
+                return BadRequest();
+            var productEdited = await _catalogService.EditProductAsync(id, editProduct);
+            if (productEdited.IsNull())
+                return NotFound(id);
+            return Ok(productEdited);
         }
 
         /// <summary>
@@ -197,10 +185,10 @@ namespace LucaLeone.WebCatalog.API.Controllers
         public async Task<IActionResult> DeleteProduct([FromQuery] Guid id)
         {
             _logger.LogThisMethod();
-            var result = await _catalogService.DeleteProductAsync(id);
-            if (result != null)
-                return Ok(result);
-            return BadRequest("Error: ID doesn't exist");
+            var productDeleted = await _catalogService.DeleteProductAsync(id);
+            if (productDeleted.IsNull())
+                return BadRequest();
+            return Ok(productDeleted);
         }
 
         /// <summary>
@@ -237,7 +225,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         public async Task<IActionResult> EraseDb()
         {
             _logger.LogThisMethod();
-            bool res = await _catalogService.EraseDb();
+            var res = await _catalogService.EraseDb();
             return Ok(res
                 ? "Database cleaned, go back and refresh"
                 : "Database was already empty, go back and refresh");

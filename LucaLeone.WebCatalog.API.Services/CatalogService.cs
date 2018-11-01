@@ -1,96 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using FileHelpers;
+using AutoMapper;
 using LucaLeone.WebCatalog.API.DataAccessors;
-using LucaLeone.WebCatalog.API.Models;
+using LucaLeone.WebCatalog.API.DTO;
+using LucaLeone.WebCatalog.API.Entities;
 using Microsoft.EntityFrameworkCore;
+using PowerUp;
 
 namespace LucaLeone.WebCatalog.API.Services
 {
     public class CatalogService : ICatalogService
     {
         private readonly CatalogContext _context;
+        private readonly IMapper _mapper;
 
-        public CatalogService(CatalogContext context)
+        public CatalogService(CatalogContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Product>> GetAllCatalogAsync()
-        {
-            return await _context.Products.ToArrayAsync();
-        }
-
-        public async Task<IEnumerable<Product>> GetCatalogPageAsync(int page, int maxNumElem = 10)
+        public async Task<IEnumerable<ProductDto>> GetCatalogPageAsync(int page, int maxNumElem = 10)
         {
             var elems2Skip = (page - 1) * maxNumElem; // skip n pages
-            return await _context.Products
+            var result = await _context.Products
                                  .OrderByDescending(p => p.LastUpdated)
                                  .Skip(elems2Skip)
                                  .Take(maxNumElem)
                                  .ToArrayAsync();
+            return _mapper.Map<IEnumerable<ProductDto>>(result);
         }
 
-        public async Task<IEnumerable<Product>> SearchProductsAsync(string productName, int minPrice, int? maxPrice)
+        public async Task<IEnumerable<ProductDto>> SearchProductsAsync(SearchDto search)
         {
-            return await _context.Products
-                                 .Where(prod => string.IsNullOrEmpty(productName) || prod.Name.Contains(productName))
-                                 .Where(prod =>  prod.Price >= minPrice)
-                                 .Where(prod =>  prod.Price <= maxPrice.GetValueOrDefault())
+            search.Name = search.Name.Trim();
+            var result = await _context.Products
+                                 .Where(prod => string.IsNullOrEmpty(search.Name) || prod.Name.Contains(search.Name))
+                                 .Where(prod =>  prod.Price >= search.MinPrice)
+                                 .Where(prod => search.MaxPrice.HasValue || prod.Price <= search.MaxPrice.Value)
                                  .OrderByDescending(p => p.LastUpdated)
                                  .ToArrayAsync();
+            return _mapper.Map<IEnumerable<ProductDto>>(result);
         }
 
-        public async Task<Product> GetProduct(Guid id)
+        public async Task<ProductDto> GetProduct(Guid id)
         {
-            return await _context.Products
-                                 .Where(prod => prod.Id.Equals(id))
-                                 .FirstOrDefaultAsync();
+            var result = await _context.Products
+                                 .FirstOrDefaultAsync(prod => prod.Id.Equals(id));
+            return _mapper.Map<ProductDto>(result);
         }
 
-        public async Task<(bool, Product)> AddProductAsync(IProductBuilder newProduct)
+        public async Task<ProductDto> AddProductAsync(ProductDto newProduct)
         {
-            try
-            {
-                var entity = newProduct.BuildProduct();
-                _context.Products.Add(entity);
-                await _context.SaveChangesAsync();
-                return (true, entity);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var productEntity = _mapper.Map<Product>(newProduct);
+            productEntity.Id = new Guid();
+            _context.Products.Add(productEntity);
+            var saveResult = await _context.SaveChangesAsync();
+            return saveResult == 1 ? _mapper.Map<ProductDto>(productEntity) : null;
         }
 
-        public async Task<Product> EditProductAsync(Guid id, NewProduct newProduct)
+        public async Task<ProductDto> EditProductAsync(Guid id, ProductDto editProduct)
         {
-            var product = _context.Products
-                                  .FirstOrDefault(p => p.Id.Equals(id));
-            if (product != null)
+            var productToEdit = _context.Products.FirstOrDefault(p => p.Id.Equals(id));
+            if (productToEdit.IsNotNull())
             {
-                product.EditProduct(newProduct.Name, newProduct.Photo, newProduct.Price);
-                int saveResult = await _context.SaveChangesAsync();
-                return saveResult == 1 ? product : null;
+                productToEdit.Name = editProduct.Name;
+                productToEdit.Photo = editProduct.Photo;
+                productToEdit.Price = editProduct.Price;
+                productToEdit.LastUpdated = DateTime.UtcNow;
+                var saveResult = await _context.SaveChangesAsync();
+                return saveResult == 1 ? editProduct : null;
             }
-
             return null;
         }
 
-        public async Task<Product> DeleteProductAsync(Guid id)
+        public async Task<ProductDto> DeleteProductAsync(Guid id)
         {
-            var product = _context.Products
+            var productToDelete = _context.Products
                                   .FirstOrDefault(p => p.Id.Equals(id));
-            if (product != null)
+            if (productToDelete.IsNotNull())
             {
-                _context.Products.Remove(product);
+                _context.Products.Remove(productToDelete);
                 int saveResult = await _context.SaveChangesAsync();
-                return saveResult == 1 ? product : null;
+                return saveResult == 1 ? _mapper.Map<ProductDto>(productToDelete) : null;
             }
 
             return null;
@@ -101,40 +95,45 @@ namespace LucaLeone.WebCatalog.API.Services
             if (_context.Products.Any())
                 return true;
 
-            _context.Products.Add(new NewProduct
+            var baseList = new List<ProductDto>
             {
-                Name = "Silver lamp led red, white and green",
-                Photo = @"http://media.4rgos.it/i/Argos/4612676_R_Z001A?$Web$&$DefaultPDP570$",
-                Price = 23.50m
-            }.BuildProduct());
-            _context.Products.Add(new NewProduct
-            {
-                Name = "Black leather chair, super comfort!",
-                Photo =
-                    @"https://www.modernmanhattan.com/image/data/demo/mmh-88535-Zahara-Black-Leather-Club-Chair-5.jpg",
-                Price = 85.35m
-            }.BuildProduct());
-            _context.Products.Add(new NewProduct
-            {
-                Name = "Wooden desk, the comfort is guaranteed!",
-                Photo =
-                    @"https://cdn.shopify.com/s/files/1/0223/2583/products/Weathered_Oak_Kneehole_Desk_RNG063_1024x1024.jpg",
-                Price = 135.99m
-            }.BuildProduct());
-            _context.Products.Add(new NewProduct
-            {
-                Name = "Rolling stones Poster, only for real rockers",
-                Photo = @"https://upload.wikimedia.org/wikipedia/it/0/04/Logo_Rolling_Stones.jpg",
-                Price = 12.99m
-            }.BuildProduct());
-
-            int saveResult = await _context.SaveChangesAsync();
+                new ProductDto
+                {
+                    Name = "Silver lamp led red, white and green",
+                    Photo =
+                        @"http://media.4rgos.it/i/Argos/4612676_R_Z001A?$Web$&$DefaultPDP570$",
+                    Price = 23.50m
+                },
+                new ProductDto
+                {
+                    Name = "Black leather chair, super comfort!",
+                    Photo =
+                        @"https://www.modernmanhattan.com/image/data/demo/mmh-88535-Zahara-Black-Leather-Club-Chair-5.jpg",
+                    Price = 85.35m
+                },
+                new ProductDto
+                {
+                    Name = "Wooden desk, the comfort is guaranteed!",
+                    Photo =
+                        @"https://cdn.shopify.com/s/files/1/0223/2583/products/Weathered_Oak_Kneehole_Desk_RNG063_1024x1024.jpg",
+                    Price = 135.99m
+                },
+                new ProductDto
+                {
+                    Name = "Rolling stones Poster, only for real rockers",
+                    Photo =
+                        @"https://upload.wikimedia.org/wikipedia/it/0/04/Logo_Rolling_Stones.jpg",
+                    Price = 12.99m
+                }
+            };
+            await _context.Products.AddRangeAsync(_mapper.Map<IEnumerable<Product>>(baseList));
+            var saveResult = await _context.SaveChangesAsync();
             return saveResult == 1;
         }
 
         public async Task<bool> EraseDb()
         {
-            int saveResult = await _context.Database.ExecuteSqlCommandAsync("delete from Products");
+            var saveResult = await _context.Database.ExecuteSqlCommandAsync("delete from Products");
             return saveResult > 0;
         }
     }
