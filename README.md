@@ -5,7 +5,7 @@ Asp.NET CORE web app for managing a products catalog. With the MVC app the users
 🚀 Framework: ASP.NET CORE 2.1<br />
 ☁ Azure: web app hosted on Azure<br />
 📃 API documentation: Swagger with Swashbuckle.AspNetCore with custom responsive layout<br />
-🏗 Patterns: MVC, Dependency injectin, Builder<br />
+🏗 Patterns: MVC, Dependency injection, Builder<br />
 
 ## Can I take a look?
 Yes, of course! Here you are:<br />
