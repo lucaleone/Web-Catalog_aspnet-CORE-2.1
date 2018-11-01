@@ -56,6 +56,8 @@ namespace LucaLeone.WebCatalog.API.Services
         {
             var productEntity = _mapper.Map<Product>(newProduct);
             productEntity.Id = new Guid();
+            productEntity.CreateDate = DateTime.UtcNow;
+            productEntity.LastUpdated = DateTime.UtcNow;
             _context.Products.Add(productEntity);
             var saveResult = await _context.SaveChangesAsync();
             return saveResult == 1 ? _mapper.Map<ProductDto>(productEntity) : null;

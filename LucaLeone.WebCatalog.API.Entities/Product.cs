@@ -45,35 +45,5 @@ namespace LucaLeone.WebCatalog.API.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
-        /// <summary>
-        ///     Set product detail and automatically update the LastUpdated field
-        /// </summary>
-        /// <param name="name">Name of the product</param>
-        /// <param name="photo">Photo url of the product</param>
-        /// <param name="price">Price of the product</param>
-        public void EditProduct(string name, string photo, decimal price)
-        {
-            bool changeDone = false;
-            if (!Name.Equals(name))
-            {
-                Name = name;
-                changeDone = true;
-            }
-
-            if (!Photo.Equals(photo))
-            {
-                Photo = photo;
-                changeDone = true;
-            }
-
-            if (Price != price)
-            {
-                Price = price;
-                changeDone = true;
-            }
-
-            if (changeDone)
-                LastUpdated = DateTime.UtcNow;
-        }
     }
 }
