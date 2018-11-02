@@ -34,6 +34,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
             _logger.LogThisMethod();
         }
 
+
         /// <summary>
         ///     Search for products that match the query.
         /// </summary>
@@ -48,7 +49,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         /// <response code="400">If the query is not valid.</response>
         [HttpGet]
         [Produces(MediaType.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCatalog(
             [FromQuery]
@@ -75,7 +76,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [Produces(MediaType.ApplicationJson)]
-        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Search([FromQuery] SearchDto search)
         {
@@ -98,7 +99,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [Produces(MediaType.ApplicationJson)]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProduct([FromQuery] Guid id)
         {
@@ -125,7 +126,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [HttpPut]
         [Route("[action]")]
         [Produces(MediaType.ApplicationJson)]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto newProduct)
         {
@@ -152,7 +153,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [HttpPut]
         [Route("[action]")]
         [Produces(MediaType.ApplicationJson)]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> EditProduct([FromQuery] Guid id,
                                                      [FromBody] ProductDto editProduct)
@@ -180,7 +181,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [HttpDelete]
         [Route("[action]")]
         [Produces(MediaType.ApplicationJson)]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteProduct([FromQuery] Guid id)
         {

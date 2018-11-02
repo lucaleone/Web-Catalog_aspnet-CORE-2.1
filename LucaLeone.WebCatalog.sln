@@ -21,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LucaLeone.WebCatalog.API.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LucaLeone.WebCatalog.API.DataAccessors", "LucaLeone.WebCatalog.API.DataAccessors\LucaLeone.WebCatalog.API.DataAccessors.csproj", "{5DC604E7-8C54-43BB-8B93-842835881851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LucaLeone.WebCatalog.API.DTO", "LucaLeone.WebCatalog.API.DTO\LucaLeone.WebCatalog.API.DTO.csproj", "{B7F3D060-8385-4A77-B396-C91C20DF07B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LucaLeone.WebCatalog.API.DTO", "LucaLeone.WebCatalog.API.DTO\LucaLeone.WebCatalog.API.DTO.csproj", "{B7F3D060-8385-4A77-B396-C91C20DF07B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LucaLeone.WebCatalog.API.Entities", "LucaLeone.WebCatalog.API.Entities\LucaLeone.WebCatalog.API.Entities.csproj", "{D2834010-F057-48A5-B05D-125400C4000E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LucaLeone.WebCatalog.API.Entities", "LucaLeone.WebCatalog.API.Entities\LucaLeone.WebCatalog.API.Entities.csproj", "{D2834010-F057-48A5-B05D-125400C4000E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LucaLeone.WebCatalog.API.Tests", "LucaLeone.WebCatalog.API.Tests\LucaLeone.WebCatalog.API.Tests.csproj", "{1DC563B7-A9AE-4CF6-AF3C-E848B0E328FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{D2834010-F057-48A5-B05D-125400C4000E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2834010-F057-48A5-B05D-125400C4000E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2834010-F057-48A5-B05D-125400C4000E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DC563B7-A9AE-4CF6-AF3C-E848B0E328FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DC563B7-A9AE-4CF6-AF3C-E848B0E328FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DC563B7-A9AE-4CF6-AF3C-E848B0E328FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DC563B7-A9AE-4CF6-AF3C-E848B0E328FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{5DC604E7-8C54-43BB-8B93-842835881851} = {C10CF706-AF73-4B5F-BC55-B61E26F574DD}
 		{B7F3D060-8385-4A77-B396-C91C20DF07B7} = {5453B418-7C36-4DBD-A091-EC1002F4936E}
 		{D2834010-F057-48A5-B05D-125400C4000E} = {C10CF706-AF73-4B5F-BC55-B61E26F574DD}
+		{1DC563B7-A9AE-4CF6-AF3C-E848B0E328FA} = {7C0742E3-05E4-4D74-8516-D10D9AE6C2E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15A31C4C-27D8-42F9-BF32-4A65102B5F35}
