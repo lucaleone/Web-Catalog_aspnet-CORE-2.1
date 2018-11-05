@@ -8,9 +8,9 @@ namespace LucaLeone.WebCatalog.API.Services
     public interface ICatalogService
     {
         Task<ProductDto> GetProduct(Guid id);
-        Task<IEnumerable<ProductDto>> GetCatalogPageAsync(int page, int maxNumElem);
+        Task<IEnumerable<ProductDto>> GetCatalogPageAsync(GetCatalogDto getCatalog);
         Task<IEnumerable<ProductDto>> SearchProductsAsync(SearchDto search);
-        Task<ProductDto> AddProductAsync(ProductDto newProduct);
+        Task<Guid> AddProductAsync(ProductDto newProduct);
         Task<ProductDto> EditProductAsync(Guid id, ProductDto newProduct);
         Task<ProductDto> DeleteProductAsync(Guid id);
         Task<bool> InitDb();

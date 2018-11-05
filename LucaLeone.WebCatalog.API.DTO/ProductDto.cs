@@ -12,6 +12,13 @@ namespace LucaLeone.WebCatalog.API.DTO
         public string Photo { get; set; }
 
         [Required]
+#if DEBUG
+        // To fix Fixture creation System.OverflowException
+        [Range(typeof(decimal), "0,99", "79228162514264337593543950335",
+            ErrorMessage = "The maximum price must be greater than 1.")]
+#else
+        [Range(0.99d, (double) decimal.MaxValue, ErrorMessage = "The maximum price must be greater than 1.")]
+#endif
         public decimal Price { get; set; }
     }
 }

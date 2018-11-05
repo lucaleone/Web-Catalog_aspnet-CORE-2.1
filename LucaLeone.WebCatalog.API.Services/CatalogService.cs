@@ -22,13 +22,13 @@ namespace LucaLeone.WebCatalog.API.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetCatalogPageAsync(int page, int maxNumElem = 10)
+        public async Task<IEnumerable<ProductDto>> GetCatalogPageAsync(GetCatalogDto getCatalog)
         {
-            var elems2Skip = (page - 1) * maxNumElem; // skip n pages
+            var elems2Skip = (getCatalog.Page - 1) * getCatalog.MaxNumElem; // skip n pages
             var result = await _context.Products
                                  .OrderByDescending(p => p.LastUpdated)
                                  .Skip(elems2Skip)
-                                 .Take(maxNumElem)
+                                 .Take(getCatalog.MaxNumElem)
                                  .ToArrayAsync();
             return _mapper.Map<IEnumerable<ProductDto>>(result);
         }
@@ -38,8 +38,8 @@ namespace LucaLeone.WebCatalog.API.Services
             search.Name = search.Name.Trim();
             var result = await _context.Products
                                  .Where(prod => string.IsNullOrEmpty(search.Name) || prod.Name.Contains(search.Name))
-                                 .Where(prod =>  prod.Price >= search.MinPrice)
-                                 .Where(prod => search.MaxPrice.HasValue || prod.Price <= search.MaxPrice.Value)
+                                 .Where(prod => prod.Price >= search.MinPrice)
+                                 .Where(prod => search.MaxPrice.IsNull() || prod.Price <= search.MaxPrice.Value)
                                  .OrderByDescending(p => p.LastUpdated)
                                  .ToArrayAsync();
             return _mapper.Map<IEnumerable<ProductDto>>(result);
@@ -52,7 +52,7 @@ namespace LucaLeone.WebCatalog.API.Services
             return _mapper.Map<ProductDto>(result);
         }
 
-        public async Task<ProductDto> AddProductAsync(ProductDto newProduct)
+        public async Task<Guid> AddProductAsync(ProductDto newProduct)
         {
             var productEntity = _mapper.Map<Product>(newProduct);
             productEntity.Id = new Guid();
@@ -60,7 +60,7 @@ namespace LucaLeone.WebCatalog.API.Services
             productEntity.LastUpdated = DateTime.UtcNow;
             _context.Products.Add(productEntity);
             var saveResult = await _context.SaveChangesAsync();
-            return saveResult == 1 ? _mapper.Map<ProductDto>(productEntity) : null;
+            return saveResult == 1 ? productEntity.Id : Guid.Empty;
         }
 
         public async Task<ProductDto> EditProductAsync(Guid id, ProductDto editProduct)
@@ -80,8 +80,7 @@ namespace LucaLeone.WebCatalog.API.Services
 
         public async Task<ProductDto> DeleteProductAsync(Guid id)
         {
-            var productToDelete = _context.Products
-                                  .FirstOrDefault(p => p.Id.Equals(id));
+            var productToDelete = _context.Products.FirstOrDefault(p => p.Id.Equals(id));
             if (productToDelete.IsNotNull())
             {
                 _context.Products.Remove(productToDelete);
@@ -130,7 +129,7 @@ namespace LucaLeone.WebCatalog.API.Services
             };
             await _context.Products.AddRangeAsync(_mapper.Map<IEnumerable<Product>>(baseList));
             var saveResult = await _context.SaveChangesAsync();
-            return saveResult == 1;
+            return saveResult > 0;
         }
 
         public async Task<bool> EraseDb()

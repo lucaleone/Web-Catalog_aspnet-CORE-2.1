@@ -42,8 +42,6 @@ namespace LucaLeone.WebCatalog.API.Controllers
         ///     Sample request:
         ///     GET api/Catalog?page=1
         /// </remarks>
-        /// <param name="page">[Optional] Number of the page, default 1.</param>
-        /// <param name="maxNumElem">[Optional]Max amount of products to return, default 10.</param>
         /// <returns>A list of the matching products</returns>
         /// <response code="200">Returns a list of the matching products.</response>
         /// <response code="400">If the query is not valid.</response>
@@ -52,14 +50,10 @@ namespace LucaLeone.WebCatalog.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCatalog(
-            [FromQuery]
-            [Range(1, int.MaxValue,ErrorMessage = "The page number must be equal or greater than 1.")]
-            int page = 1,
-            [Range(1, 50, ErrorMessage = "The minimum number of element but be between 1 and 50.")]
-            int maxNumElem = 10)
+            [FromQuery] GetCatalogDto getCatalog)
         {
             _logger.LogThisMethod();
-            var products = await _catalogService.GetCatalogPageAsync(page, maxNumElem);
+            var products = await _catalogService.GetCatalogPageAsync(getCatalog);
             return Ok(products);
         }
 
@@ -97,7 +91,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         /// <response code="200">Returns a Product with matching Id</response>
         /// <response code="400">If the Id does not exist</response>
         [HttpGet]
-        [Route("[action]")]
+        [Route("[action]", Name = nameof(GetProduct))]
         [Produces(MediaType.ApplicationJson)]
         [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -131,10 +125,9 @@ namespace LucaLeone.WebCatalog.API.Controllers
         public async Task<IActionResult> AddProduct([FromBody] ProductDto newProduct)
         {
             _logger.LogThisMethod();
-            var productAdded = await _catalogService.AddProductAsync(newProduct);
-            if (productAdded.IsNull())
-                return BadRequest();
-            return StatusCode(StatusCodes.Status201Created, productAdded);
+            var idProductAdded = await _catalogService.AddProductAsync(newProduct);
+            string uri = Url.Link(nameof(GetProduct), new { id = idProductAdded });
+            return Created(uri, newProduct);
         }
 
         /// <summary>
