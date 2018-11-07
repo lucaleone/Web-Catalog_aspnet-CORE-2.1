@@ -126,7 +126,7 @@ namespace LucaLeone.WebCatalog.API.Controllers
         {
             _logger.LogThisMethod();
             var idProductAdded = await _catalogService.AddProductAsync(newProduct);
-            string uri = Url.Link(nameof(GetProduct), new { id = idProductAdded });
+            var uri = Url.Link(nameof(GetProduct), new { id = idProductAdded });
             return Created(uri, newProduct);
         }
 
@@ -152,8 +152,6 @@ namespace LucaLeone.WebCatalog.API.Controllers
                                                      [FromBody] ProductDto editProduct)
         {
             _logger.LogThisMethod();
-            if (!ModelState.IsValid)
-                return BadRequest();
             var productEdited = await _catalogService.EditProductAsync(id, editProduct);
             if (productEdited.IsNull())
                 return NotFound(id);

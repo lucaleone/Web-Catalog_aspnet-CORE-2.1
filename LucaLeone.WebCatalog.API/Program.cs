@@ -23,9 +23,6 @@ namespace LucaLeone.WebCatalog.API
 #if DEBUG
                        logging.AddDebug();
 #endif
-#if RELEASE
-                       logging.AddAzureWebAppDiagnostics();
-#endif
                    })
                    .UseStartup<Startup>();
     }

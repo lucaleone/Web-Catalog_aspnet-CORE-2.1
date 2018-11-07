@@ -192,7 +192,7 @@ namespace LucaLeone.WebCatalog.API.Tests
         public async void AddProduct_WithGoodModel_ShouldReturnOkResult()
         {
             var requestContent = _fixture.Build<ProductDto>()
-                .With(x=> x.Photo, _fixture.Create<Uri>().ToString())
+                .With(x => x.Photo, _fixture.Create<Uri>().ToString())
                 .Create();
             var succesful = _fixture.Create<Guid>();
             _fixture.Freeze<Mock<ICatalogService>>()
@@ -218,6 +218,22 @@ namespace LucaLeone.WebCatalog.API.Tests
             Assert.IsAssignableFrom<ProductDto>((response as CreatedResult).Value);
             Assert.Equal(requestContent, (response as CreatedResult).Value);
             Assert.Contains(succesful.ToString(), (response as CreatedResult).Location);
+        }
+
+        [Fact]
+        public void AddProduct_WithInvalidModel_ShouldReturnBadRequestResult()
+        {
+            var requestContent = _fixture.Build<ProductDto>()
+                .With(x => x.Photo, _fixture.Create<int>().ToString())
+                .Create();
+            //act
+            bool valid = Validator.TryValidateObject(requestContent,
+                new ValidationContext(requestContent),
+                new List<ValidationResult>(),
+                true);
+
+            //assert
+            Assert.False(valid);
         }
         #endregion
     }

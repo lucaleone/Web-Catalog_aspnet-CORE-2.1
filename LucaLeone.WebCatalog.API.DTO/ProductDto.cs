@@ -1,9 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 namespace LucaLeone.WebCatalog.API.DTO
 {
     public class ProductDto
     {
+        public Guid Id { get; set; }
+
         [Required]
         [StringLength(100)]
         public string Name { get; set; }

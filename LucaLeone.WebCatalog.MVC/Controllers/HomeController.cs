@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using LucaLeone.WebCatalog.MVC.Models;
@@ -11,14 +12,14 @@ namespace LucaLeone.WebCatalog.MVC.Controllers
     public class HomeController : Controller
     {
         private readonly ICatalogService _catalogService;
-
+        private const int IndexMaxNumElem = 50;
         public HomeController(ICatalogService catalogService) =>
             _catalogService = catalogService;
 
-        public async Task<IActionResult> Index(int page = 1, int maxNumElem = 10)
+        public async Task<IActionResult> Index(
+            [Range(1, int.MaxValue)] int page = 1,
+            [Range(10, IndexMaxNumElem)] int maxNumElem = 10)
         {
-            CatalogInputValidation.ValidateGetCatalogInput(ref page, ref maxNumElem);
-
             var products = await _catalogService.GetCatalogPageAsync(page, maxNumElem);
             var model = new ProductsView
             {
@@ -40,13 +41,8 @@ namespace LucaLeone.WebCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> Search([FromQuery] string name = null,
-                                                [FromQuery] int? minPrice = null,
-                                                [FromQuery] int? maxPrice = null)
+        public async Task<IActionResult> Search([FromQuery][Required] string name = "")
         {
-            if (CatalogInputValidation.ValidateSearchInput(name, minPrice, maxPrice) == false)
-                return BadRequest();
-
             var products = await _catalogService.SearchProductsAsync(name);
             var model = new ProductsView
             {

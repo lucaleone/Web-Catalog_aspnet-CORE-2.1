@@ -32,11 +32,8 @@ namespace LucaLeone.WebCatalog.MVC.Services
         {
             string catalogPageUri = $"?page={page}&maxNumElem={maxNumElem}";
             var response = await hc.GetAsync(catalogPageUri);
-            response.EnsureSuccessStatusCode(); // Throw on error code.
-            string dataString = await response.Content.ReadAsStringAsync();
-            IEnumerable<Product> products =
-                JsonConvert.DeserializeObject<IEnumerable<Product>>(dataString);
-
+            response.EnsureSuccessStatusCode();
+            var products = await response.Content.ReadAsAsync<IEnumerable<Product>>();
             return products;
         }
 
@@ -44,26 +41,18 @@ namespace LucaLeone.WebCatalog.MVC.Services
         {
             string getProductUri = $"/api/Catalog/GetProduct?id={id}";
             var response = await hc.GetAsync(getProductUri);
-            response.EnsureSuccessStatusCode(); // Throw on error code.
-            string dataString = await response.Content.ReadAsStringAsync();
-            Product products = JsonConvert.DeserializeObject<Product>(dataString);
+            response.EnsureSuccessStatusCode();
+            var product = await response.Content.ReadAsAsync<Product>();
 
-            return products;
+            return product;
         }
 
-        public async Task<IEnumerable<Product>> SearchProductsAsync(
-            string productName,
-            int? minPrice = null,
-            int? maxPrice = null)
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string productName)
         {
-            string searchProductUri =
-                $"/api/Catalog/Search?name={productName}&minPrice={minPrice}&maxPrice={maxPrice}";
+            string searchProductUri = $"/api/Catalog/Search?name={productName}";
             var response = await hc.GetAsync(searchProductUri);
             response.EnsureSuccessStatusCode();
-            string dataString = await response.Content.ReadAsStringAsync();
-            IEnumerable<Product> products =
-                JsonConvert.DeserializeObject<IEnumerable<Product>>(dataString);
-
+            var products = await response.Content.ReadAsAsync<IEnumerable<Product>>();
             return products;
         }
 
@@ -73,9 +62,8 @@ namespace LucaLeone.WebCatalog.MVC.Services
 
             string json = JsonConvert.SerializeObject(newProduct);
             var tmp = new StringContent(json, Encoding.UTF8);
-            var response = await hc.PostAsync(addProductUri,
-                new StringContent(json, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode(); // Throw on error code.
+            var response = await hc.PutAsJsonAsync(addProductUri, newProduct);
+            response.EnsureSuccessStatusCode();
 
             return response.IsSuccessStatusCode;
         }

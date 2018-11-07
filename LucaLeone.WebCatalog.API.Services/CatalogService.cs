@@ -35,7 +35,8 @@ namespace LucaLeone.WebCatalog.API.Services
 
         public async Task<IEnumerable<ProductDto>> SearchProductsAsync(SearchDto search)
         {
-            search.Name = search.Name.Trim();
+            if(!string.IsNullOrWhiteSpace(search.Name))
+                search.Name = search.Name.Trim();
             var result = await _context.Products
                                  .Where(prod => string.IsNullOrEmpty(search.Name) || prod.Name.Contains(search.Name))
                                  .Where(prod => prod.Price >= search.MinPrice)
